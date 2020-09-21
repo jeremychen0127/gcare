@@ -22,17 +22,22 @@ public:
 	double AggCard();
 	double GetSelectivity();
 
+    double EstCardAllMax(int subquery_index);
+    double EstCardGreedyMax(int subquery_index);
+
 private:
     bool getSubstructureFlag;
-    map<string, map<string, long>> mt_;
-    map<string, set<string>> ceg; // small subquery -> its next level nodes
-    set<string> largestMTEntries; // longest MT entries
 
-    void decompose(const string &vListString, int mtLen);
-    void getDecom(const vector<string> &vListEdges, const int &mtLen, int depth, const string &current, const string &parent);
+    // new encoding
+    vector<long> mt1_;
+    vector<vector<vector<vector<long>>>> mt2_;
 
-    set<pair<string, string>> getExtensions(const string &currentVList, const string &nextVList);
-    double getMaxExt(const set<pair<string, string>> &extensions, const string &queryVList, const string &queryLabelSeq);
+    void insertEntryToMT(const vector<string> &entry);
+    void getExtensions(vector<tuple<int, int, Edge, Edge>> &extensions, const vector<Edge> &current, const int &currentEnc);
+    double calcExtRate(const tuple<int, int, Edge, Edge> &ext);
+    void makeEstAndAddToQueue(vector<SubQEdgeNode> &subQEdgeNodePool, const int &currentIdx, const double &currentEst,
+                              const tuple<int, int, Edge, Edge> &ext, deque<int> &queue,
+                              vector<bool> &processed, vector<double> &estimates);
 };
 
 #endif
